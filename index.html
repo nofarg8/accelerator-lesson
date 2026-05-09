@@ -113,8 +113,23 @@
   body.has-sticky-banner{padding-bottom:90px}
   @media (max-width:560px){
     .sticky-bottom-banner a{padding:.85rem 1.2rem;font-size:.95rem;width:100%;max-width:none}
-    .sticky-bottom-banner{padding:.6rem .8rem calc(.6rem + env(safe-area-inset-bottom))}
+    .sticky-bottom-banner{padding:.6rem .8rem calc(.6rem + env(safe-area-inset-bottom,0px))}
     body.has-sticky-banner{padding-bottom:80px}
+  }
+  /* Mobile-only: harden sticky banner against Wix iframe issues */
+  @media (max-width:880px){
+    .sticky-bottom-banner{
+      position:fixed !important;
+      left:0 !important;right:0 !important;bottom:0 !important;
+      z-index:2147483647 !important;
+      width:100% !important;
+      box-sizing:border-box !important;
+    }
+    .sticky-bottom-banner.in{
+      transform:translateY(0) !important;
+      opacity:1 !important;
+      pointer-events:auto !important;
+    }
   }
 </style>
 </head>
@@ -706,7 +721,7 @@ function SolutionSection(){
             </div>
             <div style={{marginTop:"1.6rem",padding:"1rem 1.2rem",background:"var(--moss)",color:"var(--paper)",borderRadius:"4px",fontSize:"1rem",lineHeight:1.5,display:"flex",alignItems:"center",gap:".8rem",flexWrap:"wrap"}}>
               <span style={{fontFamily:"JetBrains Mono",fontSize:".75rem",letterSpacing:".08em",padding:".2rem .55rem",border:"1px solid rgba(241,235,220,0.4)",borderRadius:"3px"}}>BOTTOM LINE</span>
-              <span>הזמן שלך בשטח, לא בהכנה. <strong style={{fontWeight:600}}>המורה לא צריכה להכין - היא יכולה פשוט ללמד.</strong></span>
+              <span>הזמן שלך בשטח, לא בהכנה. <strong style={{fontWeight:600}}>המורה לא צריכה לעבוד - היא צריכה ללמד.</strong></span>
             </div>
           </div>
         </div>
