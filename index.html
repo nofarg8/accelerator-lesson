@@ -111,29 +111,50 @@
     animation:pulseA 1.6s ease-in-out infinite;flex-shrink:0;
   }
   body.has-sticky-banner{padding-bottom:90px}
+
+  /* Mobile-only inline registration banner - guaranteed visibility in iframes */
+  .mobile-inline-register{display:none}
+  @media (max-width:880px){
+    .mobile-inline-register{
+      display:flex;
+      align-items:center;justify-content:center;gap:.55rem;
+      margin:1.5rem 1rem;padding:1rem 1.4rem;
+      background:linear-gradient(135deg,var(--accent) 0%,var(--accent-deep) 100%);
+      color:var(--paper) !important;
+      border-radius:999px;
+      text-decoration:none;
+      font-family:"Heebo";font-weight:500;font-size:1.02rem;
+      box-shadow:0 6px 20px rgba(194,85,58,0.3);
+      animation:gentlePulse 2.4s ease-in-out infinite;
+    }
+    .mobile-inline-register .pulse-dot-mob{
+      width:8px;height:8px;background:var(--paper);border-radius:50%;
+      animation:pulseA 1.6s ease-in-out infinite;flex-shrink:0;
+    }
+    @keyframes gentlePulse{
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(1.015)}
+    }
+  }
   @media (max-width:560px){
     .sticky-bottom-banner a{padding:.85rem 1.2rem;font-size:.95rem;width:100%;max-width:none}
+    .sticky-bottom-banner{padding:.6rem .8rem calc(.6rem + env(safe-area-inset-bottom,0px))}
+    body.has-sticky-banner{padding-bottom:80px}
   }
-  /* Mobile-only: stick banner to TOP (not bottom) - bypasses Wix mobile UI overlap */
+  /* Mobile-only: harden sticky banner against Wix iframe issues */
   @media (max-width:880px){
     .sticky-bottom-banner{
       position:fixed !important;
-      left:0 !important;right:0 !important;
-      top:0 !important;bottom:auto !important;
+      left:0 !important;right:0 !important;bottom:0 !important;
       z-index:2147483647 !important;
       width:100% !important;
       box-sizing:border-box !important;
-      padding:.6rem .8rem calc(.6rem + env(safe-area-inset-top,0px)) !important;
-      border-top:none !important;
-      border-bottom:1px solid var(--rule-strong) !important;
-      transform:translateY(-100%) !important;
     }
     .sticky-bottom-banner.in{
       transform:translateY(0) !important;
       opacity:1 !important;
       pointer-events:auto !important;
     }
-    body.has-sticky-banner{padding-bottom:0 !important;padding-top:70px !important}
   }
 </style>
 </head>
@@ -1079,6 +1100,17 @@ function TweaksUI({tweaks,setTweak}){
   );
 }
 
+// === Mobile-only Inline Register CTA (guaranteed visibility in Wix iframes) ===
+function MobileInlineRegister(){
+  return (
+    <a href="#register" onClick={smoothScrollToRegister} className="mobile-inline-register">
+      <span className="pulse-dot-mob"></span>
+      <span>הרשמה להדרכה החינמית</span>
+      <span style={{fontFamily:"JetBrains Mono",fontSize:".9rem"}}>←</span>
+    </a>
+  );
+}
+
 // === Sticky Bottom Registration Banner ===
 function StickyBottomBanner(){
   const [visible,setVisible] = React.useState(false);
@@ -1122,8 +1154,10 @@ function App(){
       <Header tweaks={tweaks}/>
       <Hero tweaks={tweaks}/>
       <Ticker/>
+      <MobileInlineRegister/>
       <ProblemSection/>
       <SolutionSection/>
+      <MobileInlineRegister/>
       <CTAStrip
         variant="dark"
         eyebrow="מוכנה להפסיק להלחם?"
