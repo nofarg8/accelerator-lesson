@@ -80,6 +80,42 @@
   /* paper texture */
   .paper-card{background:var(--paper);border:1px solid var(--rule);border-radius:6px;position:relative}
   .paper-card::before{content:"";position:absolute;inset:0;border-radius:6px;background-image:radial-gradient(rgba(22,24,20,.04) 1px, transparent 1px);background-size:14px 14px;pointer-events:none;mix-blend-mode:multiply}
+  /* Sticky bottom registration banner */
+  .sticky-bottom-banner{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    padding:.75rem 1rem calc(.75rem + env(safe-area-inset-bottom));
+    background:rgba(241,235,220,0.94);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-top:1px solid var(--rule-strong);
+    transform:translateY(100%);transition:transform .3s ease, opacity .3s ease;
+    opacity:0;pointer-events:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .sticky-bottom-banner.in{transform:translateY(0);opacity:1;pointer-events:auto}
+  .sticky-bottom-banner a{
+    display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+    background:var(--accent);color:var(--paper);
+    padding:.95rem 1.6rem;border-radius:999px;text-decoration:none;
+    font-family:"Heebo";font-weight:500;font-size:1.02rem;
+    box-shadow:0 4px 18px rgba(194,85,58,0.35),0 2px 4px rgba(22,24,20,0.12);
+    transition:transform .15s ease, background .2s ease, box-shadow .2s ease;
+    max-width:680px;width:auto;
+  }
+  .sticky-bottom-banner a:hover{
+    background:var(--accent-deep);
+    transform:translateY(-1px);
+    box-shadow:0 6px 22px rgba(194,85,58,0.45),0 2px 4px rgba(22,24,20,0.12);
+  }
+  .sticky-bottom-banner .pulse-dot{
+    width:8px;height:8px;background:var(--paper);border-radius:50%;
+    animation:pulseA 1.6s ease-in-out infinite;flex-shrink:0;
+  }
+  body.has-sticky-banner{padding-bottom:90px}
+  @media (max-width:560px){
+    .sticky-bottom-banner a{padding:.85rem 1.2rem;font-size:.95rem;width:100%;max-width:none}
+    .sticky-bottom-banner{padding:.6rem .8rem calc(.6rem + env(safe-area-inset-bottom))}
+    body.has-sticky-banner{padding-bottom:80px}
+  }
 </style>
 </head>
 <body>
@@ -1024,6 +1060,41 @@ function TweaksUI({tweaks,setTweak}){
   );
 }
 
+// === Sticky Bottom Registration Banner ===
+function StickyBottomBanner(){
+  const [visible,setVisible] = React.useState(false);
+  React.useEffect(()=>{
+    const onScroll = ()=>{
+      const pastHero = window.scrollY > window.innerHeight * 0.5;
+      const formSection = document.getElementById('register') || document.getElementById('register-form');
+      let inFormSection = false;
+      if(formSection){
+        const r = formSection.getBoundingClientRect();
+        inFormSection = r.top < window.innerHeight && r.bottom > 0;
+      }
+      setVisible(pastHero && !inFormSection);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll);
+    document.body.classList.add('has-sticky-banner');
+    return ()=>{
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      document.body.classList.remove('has-sticky-banner');
+    };
+  },[]);
+  return (
+    <div className={"sticky-bottom-banner"+(visible?" in":"")} aria-hidden={!visible}>
+      <a href="#register" onClick={smoothScrollToRegister}>
+        <span className="pulse-dot"></span>
+        <span>הרשמה להדרכה החינמית</span>
+        <span style={{fontFamily:"JetBrains Mono",fontSize:".9rem"}}>←</span>
+      </a>
+    </div>
+  );
+}
+
 // === App ===
 function App(){
   const [tweaks,setTweak] = useTweaks(DEFAULTS);
@@ -1052,6 +1123,7 @@ function App(){
       <Gift/>
       <FinalCTA tweaks={tweaks}/>
       <Footer/>
+      <StickyBottomBanner/>
       {window.location.search.includes('edit=true') && <TweaksUI tweaks={tweaks} setTweak={setTweak}/>}
     </div>
   );
