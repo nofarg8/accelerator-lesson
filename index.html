@@ -313,8 +313,15 @@ function useCountdown(targetIso){
   return t;
 }
 function smoothScrollToRegister(e){
-  e.preventDefault();
-  // Scroll directly to the form card so the form itself is in view.
+  if(e) e.preventDefault();
+  // אם הדף בתוך iframe (כמו ב-Wix) - פתח את הטופס בלשונית חדשה כדי לעקוף את מגבלות ה-iframe
+  let inIframe = false;
+  try { inIframe = window.self !== window.top; } catch(err){ inIframe = true; }
+  if(inIframe){
+    window.open('https://www.wixforms.com/f/7407857741143737375', '_blank', 'noopener');
+    return;
+  }
+  // אחרת - גלילה רגילה לטופס בתוך הדף
   const target = document.getElementById('register-form') || document.getElementById('register');
   if(target){
     const y = target.getBoundingClientRect().top + window.scrollY - 90;
