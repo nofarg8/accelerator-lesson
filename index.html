@@ -113,23 +113,27 @@
   body.has-sticky-banner{padding-bottom:90px}
   @media (max-width:560px){
     .sticky-bottom-banner a{padding:.85rem 1.2rem;font-size:.95rem;width:100%;max-width:none}
-    .sticky-bottom-banner{padding:.6rem .8rem calc(.6rem + env(safe-area-inset-bottom,0px))}
-    body.has-sticky-banner{padding-bottom:80px}
   }
-  /* Mobile-only: harden sticky banner against Wix iframe issues */
+  /* Mobile-only: stick banner to TOP (not bottom) - bypasses Wix mobile UI overlap */
   @media (max-width:880px){
     .sticky-bottom-banner{
       position:fixed !important;
-      left:0 !important;right:0 !important;bottom:0 !important;
+      left:0 !important;right:0 !important;
+      top:0 !important;bottom:auto !important;
       z-index:2147483647 !important;
       width:100% !important;
       box-sizing:border-box !important;
+      padding:.6rem .8rem calc(.6rem + env(safe-area-inset-top,0px)) !important;
+      border-top:none !important;
+      border-bottom:1px solid var(--rule-strong) !important;
+      transform:translateY(-100%) !important;
     }
     .sticky-bottom-banner.in{
       transform:translateY(0) !important;
       opacity:1 !important;
       pointer-events:auto !important;
     }
+    body.has-sticky-banner{padding-bottom:0 !important;padding-top:70px !important}
   }
 </style>
 </head>
